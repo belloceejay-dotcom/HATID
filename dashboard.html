@@ -327,7 +327,13 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script src="hatid-script.js"></script>
+<script>
+  const user = sessionStorage.getItem('hatid_user');
+
+  if (!user) {
+    window.location.href = 'index.html';
+  }
+</script>>
 </body>
 </html>
 
