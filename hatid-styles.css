@@ -250,19 +250,3 @@ footer ul li a:hover { color: var(--gold-light); }
   footer { grid-template-columns: 1fr; }
   .hero-stats { flex-wrap: wrap; gap: 1rem; }
 }
-/* STAR RATING */
-.star-rating { display: flex; gap: 6px; }
-.star-rating .star {
-  font-size: 2.2rem; cursor: pointer; color: var(--border);
-  transition: color 0.15s, transform 0.15s;
-  line-height: 1;
-}
-.star-rating .star:hover,
-.star-rating .star.active { color: var(--gold); transform: scale(1.1); }
-
-.mini-stars { display: flex; gap: 4px; }
-.mini-stars span {
-  font-size: 1.3rem; cursor: pointer; color: var(--border);
-  transition: color 0.15s;
-}
-.mini-stars span.active { color: var(--gold); }
