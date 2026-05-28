@@ -3,331 +3,208 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HATID — Pasabuy Marketplace</title>
+  <title>HATID — Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="hatid-styles.css">
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .auth-brand {
+      background: var(--ink);
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 60px;
+      position: relative; overflow: hidden;
+    }
+    .auth-brand::before {
+      content: '';
+      position: absolute; top: -100px; right: -100px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,146,42,0.2) 0%, transparent 70%);
+    }
+    .auth-brand .logo { font-size: 2.5rem; color: var(--cream); margin-bottom: 2rem; }
+    .auth-brand h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem; color: var(--cream);
+      line-height: 1.2; margin-bottom: 1rem;
+    }
+    .auth-brand h2 em { color: var(--gold); font-style: italic; }
+    .auth-brand p { color: rgba(250,246,239,0.6); font-size: 0.95rem; line-height: 1.7; max-width: 360px; }
+    .auth-features { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 14px; }
+    .auth-feature { display: flex; align-items: center; gap: 12px; color: rgba(250,246,239,0.75); font-size: 0.9rem; }
+    .auth-feature-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(201,146,42,0.2); display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .auth-form-side {
+      background: var(--cream);
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 60px 40px;
+    }
+    .auth-form-box { width: 100%; max-width: 400px; }
+    .auth-form-box h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem; margin-bottom: 6px;
+    }
+    .auth-form-box .auth-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+    .role-toggle {
+      display: grid; grid-template-columns: 1fr 1fr;
+      background: var(--warm); border-radius: 12px; padding: 4px;
+      margin-bottom: 24px; gap: 4px;
+    }
+    .role-btn {
+      padding: 10px; border: none; border-radius: 9px;
+      background: transparent; cursor: pointer; font-family: inherit;
+      font-size: 0.88rem; font-weight: 500; color: var(--muted);
+      transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .role-btn.active { background: var(--card-bg); color: var(--ink); box-shadow: var(--shadow); font-weight: 600; }
+    .form-group { margin-bottom: 16px; }
+    .input-wrap { position: relative; }
+    .input-wrap .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 0.95rem;
+    }
+    .input-wrap input { padding-left: 40px; }
+    .forgot { text-align: right; margin-top: 6px; }
+    .forgot a { font-size: 0.82rem; color: var(--gold); text-decoration: none; }
+    .auth-submit {
+      width: 100%; padding: 14px; border: none; cursor: pointer;
+      background: var(--ink); color: var(--cream);
+      border-radius: 100px; font-size: 1rem; font-weight: 600;
+      font-family: inherit; transition: background 0.2s; margin-top: 8px;
+    }
+    .auth-submit:hover { background: var(--gold); color: var(--ink); }
+    .auth-divider {
+      text-align: center; margin: 20px 0;
+      color: var(--muted); font-size: 0.82rem;
+      position: relative;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; position: absolute; top: 50%; width: 40%; height: 1px;
+      background: var(--border);
+    }
+    .auth-divider::before { left: 0; }
+    .auth-divider::after { right: 0; }
+    .auth-switch { text-align: center; font-size: 0.88rem; color: var(--muted); margin-top: 20px; }
+    .auth-switch a { color: var(--gold); font-weight: 600; text-decoration: none; }
+    .privacy-note {
+      background: var(--warm); border-radius: 10px; padding: 12px 14px;
+      font-size: 0.78rem; color: var(--muted); line-height: 1.6;
+      margin-top: 20px; border-left: 3px solid var(--gold);
+    }
+    .privacy-note strong { color: var(--ink); }
+    .error-msg {
+      background: #fef2f2; border: 1px solid #fecaca;
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 0.83rem; color: #dc2626;
+      margin-bottom: 16px; display: none;
+    }
+    .error-msg.show { display: block; }
+    @media (max-width: 768px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-brand { display: none; }
+      .auth-form-side { padding: 40px 24px; }
+    }
+  </style>
 </head>
 <body>
-
-<!-- NAV -->
-<nav>
-  <div class="logo">HA<span>TID</span></div>
-  <ul class="nav-links">
-    <li><a href="#how">How It Works</a></li>
-    <li><a href="#listings">Find Travelers</a></li>
-    <li><a href="#order">Order Now</a></li>
-    <li><a href="#tracker">Track Order</a></li>
-    <li><a href="#order" class="nav-cta">Get Started</a></li>
-  </ul>
-</nav>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-text">
-    <p class="section-label">Pasabuy, Reimagined</p>
-    <h1>Your <em>pasabuy</em>,<br>safe &amp; simple.</h1>
-    <p class="hero-sub">Connect with verified Filipino travelers worldwide. From Tokyo finds to Dubai deals — get authentic international products delivered with trust.</p>
-    <div class="hero-btns">
-      <a href="#listings" class="btn btn-primary">Browse Travelers ✈️</a>
-      <a href="#order" class="btn btn-outline">Place an Order</a>
-    </div>
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-num">1.2K+</div><div class="stat-label">Travelers</div></div>
-      <div class="stat"><div class="stat-num">8.4K+</div><div class="stat-label">Orders Done</div></div>
-      <div class="stat"><div class="stat-num">4.9★</div><div class="stat-label">Avg Rating</div></div>
+<div class="auth-page">
+  <div class="auth-brand">
+    <div class="logo">HA<span>TID</span></div>
+    <h2>Welcome back to<br><em>HATID</em></h2>
+    <p>The trusted Filipino pasabuy marketplace connecting buyers with verified overseas travelers.</p>
+    <div class="auth-features">
+      <div class="auth-feature"><div class="auth-feature-icon">🔒</div>Secure escrow payment protection</div>
+      <div class="auth-feature"><div class="auth-feature-icon">✈️</div>Verified travelers from 50+ countries</div>
+      <div class="auth-feature"><div class="auth-feature-icon">📦</div>Real-time order tracking</div>
+      <div class="auth-feature"><div class="auth-feature-icon">⭐</div>Ratings & review system</div>
     </div>
   </div>
-  <div class="hero-visual">
-    <div class="hero-card-stack">
-      <div class="hcard hcard-main">
-        <div class="traveler-avatar">MR</div>
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div>
-            <div style="font-weight:700;font-size:1rem">Maria R.</div>
-            <div style="color:var(--muted);font-size:0.78rem">⭐ 4.9 · 143 trips</div>
-          </div>
-          <span class="badge badge-green">✓ Verified</span>
+  <div class="auth-form-side">
+    <div class="auth-form-box">
+      <h2>Sign In</h2>
+      <p class="auth-sub">Choose your account type to continue</p>
+      <div class="role-toggle">
+        <button class="role-btn active" id="roleBtn-buyer" onclick="setRole('buyer')">🛍️ Buyer</button>
+        <button class="role-btn" id="roleBtn-traveler" onclick="setRole('traveler')">✈️ Traveler</button>
+      </div>
+      <div class="error-msg" id="loginError">Invalid email or password. Please try again.</div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉️</span>
+          <input type="email" id="loginEmail" placeholder="juandelacruz@email.com">
         </div>
-        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-          <div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px">ROUTE</div>
-          <div style="font-weight:600">🇯🇵 Tokyo → Manila</div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">June 15–22, 2025</div>
-        </div>
-        <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
-          <span class="cat-tag">Skincare</span>
-          <span class="cat-tag">Fashion</span>
-          <span class="cat-tag">Snacks</span>
-        </div>
-      </div>
-      <div class="hcard hcard-2">
-        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">ORDER PLACED</div>
-        <div style="font-weight:700;font-size:0.95rem;margin-bottom:6px">Shiseido Sunscreen SPF50+</div>
-        <div style="font-size:0.82rem;color:var(--muted)">Qty: 2 · PHP 1,400</div>
-        <div style="margin-top:12px"><span class="badge badge-gold">⏳ Escrow Held</span></div>
-      </div>
-      <div class="hcard hcard-3">
-        <div style="font-size:0.72rem;opacity:0.6;margin-bottom:6px">STATUS UPDATE</div>
-        <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px">📦 Item Purchased!</div>
-        <div style="font-size:0.8rem;opacity:0.7">Maria just bought your item</div>
-        <span class="badge badge-ink" style="margin-top:8px">In Transit</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how">
-  <p class="section-label">The Process</p>
-  <h2 class="section-title">From abroad to your door, stress-free.</h2>
-  <div class="steps-grid">
-    <div class="step-card">
-      <div class="step-num">01</div>
-      <div class="step-icon">🔍</div>
-      <h3>Browse Travelers</h3>
-      <p>Explore listings from verified OFWs and frequent travelers. Filter by destination, dates, and item categories.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">02</div>
-      <div class="step-icon">📋</div>
-      <h3>Submit a Request</h3>
-      <p>Send your product request with item name, link, budget, and quantity. Chat with your traveler directly on the platform.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">03</div>
-      <div class="step-icon">🔒</div>
-      <h3>Secure Payment</h3>
-      <p>Pay into our escrow system. Funds are only released to the traveler after you confirm safe delivery.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">04</div>
-      <div class="step-icon">📦</div>
-      <h3>Track &amp; Receive</h3>
-      <p>Monitor your order status in real-time — from purchase to transit to your hands. Rate the experience after.</p>
-    </div>
-  </div>
-</section>
-
-<!-- TRAVELER LISTINGS -->
-<section id="listings">
-  <p class="section-label">Active Listings</p>
-  <h2 class="section-title">Find your traveler now.</h2>
-  <div class="filters">
-    <button class="filter-btn active" onclick="filterListings('all',this)">All Destinations</button>
-    <button class="filter-btn" onclick="filterListings('japan',this)">🇯🇵 Japan</button>
-    <button class="filter-btn" onclick="filterListings('korea',this)">🇰🇷 Korea</button>
-    <button class="filter-btn" onclick="filterListings('us',this)">🇺🇸 USA</button>
-    <button class="filter-btn" onclick="filterListings('uae',this)">🇦🇪 UAE</button>
-    <button class="filter-btn" onclick="filterListings('sg',this)">🇸🇬 Singapore</button>
-  </div>
-  <div class="listings-grid" id="listingsGrid"></div>
-</section>
-
-<!-- ORDER FORM -->
-<section id="order">
-  <div class="order-grid">
-    <div class="order-info">
-      <p class="section-label">Place a Request</p>
-      <h2 class="section-title">Order anything from anywhere.</h2>
-      <p>Found something you want but can't get locally? Submit a request to a verified traveler heading to that destination.</p>
-      <div class="escrow-info">
-        <h4>🔒 How Payment Escrow Works</h4>
-        <div class="escrow-step"><div class="escrow-dot">1</div><span>Buyer pays into HATID escrow. Funds held securely.</span></div>
-        <div class="escrow-step"><div class="escrow-dot">2</div><span>Traveler purchases item and ships to buyer.</span></div>
-        <div class="escrow-step"><div class="escrow-dot">3</div><span>Buyer confirms receipt. Funds released to traveler.</span></div>
-        <div class="escrow-step"><div class="escrow-dot">4</div><span>Both parties rate each other. Trust grows.</span></div>
-      </div>
-    </div>
-    <div class="form-card">
-      <h3>📋 New Order Request</h3>
-      <div class="form-group form-row">
-        <div><label>Your Name</label><input type="text" id="buyerName" placeholder="Juan dela Cruz"></div>
-        <div><label>Contact</label><input type="text" id="buyerContact" placeholder="09XX XXX XXXX"></div>
       </div>
       <div class="form-group">
-        <label>Select Traveler</label>
-        <select id="selectedTraveler">
-          <option value="">— Choose a verified traveler —</option>
-          <option value="maria">Maria R. · Tokyo → Manila (Jun 15)</option>
-          <option value="jose">Jose M. · Seoul → Manila (Jun 20)</option>
-          <option value="ana">Ana T. · New York → Manila (Jul 5)</option>
-          <option value="carlo">Carlo S. · Dubai → Manila (Jun 28)</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Item Name</label><input type="text" id="itemName" placeholder="e.g. Shiseido Anessa Sunscreen SPF50+ 60ml"></div>
-      <div class="form-group"><label>Product Link (optional)</label><input type="url" id="itemLink" placeholder="https://www.amazon.co.jp/..."></div>
-      <div class="form-group form-row">
-        <div><label>Budget (PHP)</label><input type="number" id="itemBudget" placeholder="1500"></div>
-        <div><label>Quantity</label><input type="number" id="itemQty" placeholder="1" min="1"></div>
-      </div>
-      <div class="form-group"><label>Special Instructions</label><textarea id="itemNotes" placeholder="Color, size, variant, or any specific notes..."></textarea></div>
-      <button class="submit-btn" onclick="submitOrder()">Place Order Request →</button>
-    </div>
-  </div>
-</section>
-
-<!-- ORDER TRACKER -->
-<section id="tracker">
-  <p class="section-label">Order Tracking</p>
-  <h2 class="section-title" style="margin-bottom:2rem">Where's my order?</h2>
-  <div class="tracker-wrapper">
-    <div class="tracker-header">
-      <div>
-        <div class="order-id">Order #HTD-2025-0042</div>
-        <div class="order-meta">Shiseido Sunscreen · Maria R. · Tokyo → Manila</div>
-        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
-          <span class="badge badge-blue">💰 DP Paid: PHP 420</span>
-          <span class="badge badge-gold">Escrow: PHP 980 held</span>
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔑</span>
+          <input type="password" id="loginPassword" placeholder="Enter your password">
         </div>
+        <div class="forgot"><a href="#">Forgot password?</a></div>
       </div>
-      <span class="badge badge-gold" id="orderStatusBadge" style="font-size:0.82rem;padding:5px 14px">In Transit</span>
-    </div>
-
-    <div class="tracker-steps" id="trackerSteps">
-      <div class="tracker-step"><div class="step-circle step-done">✓</div><div class="step-content"><div class="step-name">Request Submitted</div><div class="step-time">June 12, 2025 · 10:32 AM</div></div></div>
-      <div class="tracker-step"><div class="step-circle step-done">✓</div><div class="step-content"><div class="step-name">Order Accepted by Traveler</div><div class="step-time">June 12, 2025 · 2:15 PM</div><div class="step-note">Maria confirmed. 30% DP of PHP 420 charged. Remaining PHP 980 held in escrow.</div></div></div>
-      <div class="tracker-step"><div class="step-circle step-done">✓</div><div class="step-content"><div class="step-name">Item Purchased</div><div class="step-time">June 16, 2025 · 11:00 AM</div><div class="step-note">Maria bought item from Don Quijote Shinjuku. Receipt uploaded.</div></div></div>
-      <div class="tracker-step"><div class="step-circle step-active">✈️</div><div class="step-content"><div class="step-name">In Transit</div><div class="step-time">June 22, 2025 · Expected arrival</div><div class="step-note">Maria is flying back to Manila. Coordinate meetup via chat.</div></div></div>
-      <div class="tracker-step"><div class="step-circle step-pending" id="stepDelivered">📦</div><div class="step-content"><div class="step-name">Delivered — Awaiting Confirmation</div><div class="step-time">Pending</div></div></div>
-      <div class="tracker-step"><div class="step-circle step-pending" id="stepCompleted">⭐</div><div class="step-content"><div class="step-name">Completed &amp; Reviewed</div><div class="step-time" id="completedTime">Pending</div></div></div>
-    </div>
-
-    <!-- Cancel Warning -->
-    <div class="cancel-warning" id="cancelWarningBox">
-      <h4>⚠️ Cancellation Policy</h4>
-      <p>Cancelling at this stage (<em>item already purchased</em>) is <strong>not allowed</strong> without a dispute.</p>
-      <span class="penalty-tag">Buyer penalty: 5% if cancelled after acceptance</span>
-      <span class="penalty-tag" style="margin-left:6px">Traveler penalty: 10% if cancelled after acceptance</span>
-    </div>
-
-    <!-- Action Buttons -->
-    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap" id="trackerActions">
-      <button class="btn btn-outline" style="font-size:0.85rem;padding:10px 20px" onclick="showToast('Opening chat with Maria...')">💬 Message Traveler</button>
-      <button class="btn btn-gold" style="font-size:0.85rem;padding:10px 20px" id="confirmDeliveryBtn" onclick="confirmDelivery()">✅ Confirm Delivery</button>
-      <button class="btn btn-danger" style="font-size:0.85rem;padding:10px 20px" id="cancelOrderBtn" onclick="showCancelModal('buyer')">🚫 Cancel Order</button>
-    </div>
-
-    <!-- RATINGS & REVIEW FORM (hidden until delivery confirmed) -->
-    <div id="reviewSection" style="display:none;margin-top:28px;border-top:2px solid var(--border);padding-top:28px">
-      <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:6px">⭐ Rate Your Experience</h3>
-      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px">Delivery confirmed! Escrow released to traveler. Please rate your transaction with <strong>Maria R.</strong></p>
-
-      <!-- Star Rating -->
-      <div style="margin-bottom:20px">
-        <label style="font-size:0.8rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:block">Overall Rating</label>
-        <div class="star-rating" id="starRating">
-          <span class="star" data-value="1" onclick="setRating(1)">★</span>
-          <span class="star" data-value="2" onclick="setRating(2)">★</span>
-          <span class="star" data-value="3" onclick="setRating(3)">★</span>
-          <span class="star" data-value="4" onclick="setRating(4)">★</span>
-          <span class="star" data-value="5" onclick="setRating(5)">★</span>
-        </div>
-        <div id="ratingLabel" style="font-size:0.82rem;color:var(--muted);margin-top:6px">Click a star to rate</div>
-      </div>
-
-      <!-- Category Ratings -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px">
-        <div style="background:var(--warm);border-radius:10px;padding:12px 14px">
-          <div style="font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Communication</div>
-          <div class="mini-stars" id="stars-comm" data-cat="comm">
-            <span onclick="setMiniRating('comm',1)">★</span><span onclick="setMiniRating('comm',2)">★</span><span onclick="setMiniRating('comm',3)">★</span><span onclick="setMiniRating('comm',4)">★</span><span onclick="setMiniRating('comm',5)">★</span>
-          </div>
-        </div>
-        <div style="background:var(--warm);border-radius:10px;padding:12px 14px">
-          <div style="font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Item Accuracy</div>
-          <div class="mini-stars" id="stars-accuracy" data-cat="accuracy">
-            <span onclick="setMiniRating('accuracy',1)">★</span><span onclick="setMiniRating('accuracy',2)">★</span><span onclick="setMiniRating('accuracy',3)">★</span><span onclick="setMiniRating('accuracy',4)">★</span><span onclick="setMiniRating('accuracy',5)">★</span>
-          </div>
-        </div>
-        <div style="background:var(--warm);border-radius:10px;padding:12px 14px">
-          <div style="font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Delivery Speed</div>
-          <div class="mini-stars" id="stars-speed" data-cat="speed">
-            <span onclick="setMiniRating('speed',1)">★</span><span onclick="setMiniRating('speed',2)">★</span><span onclick="setMiniRating('speed',3)">★</span><span onclick="setMiniRating('speed',4)">★</span><span onclick="setMiniRating('speed',5)">★</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Written Review -->
-      <div style="margin-bottom:16px">
-        <label style="font-size:0.8rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block">Written Review</label>
-        <textarea id="reviewText" placeholder="Share your experience with Maria R. — was the item as expected? Was communication good?" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid var(--border);font-family:inherit;font-size:0.9rem;background:var(--cream);color:var(--ink);outline:none;resize:vertical;min-height:100px"></textarea>
-      </div>
-
-      <!-- Recommend Toggle -->
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;background:var(--warm);padding:12px 16px;border-radius:10px">
-        <input type="checkbox" id="recommendCheck" style="width:18px;height:18px;accent-color:var(--gold)">
-        <label for="recommendCheck" style="font-size:0.88rem;font-weight:500;color:var(--ink);text-transform:none;letter-spacing:0">👍 I would recommend this traveler to other buyers</label>
-      </div>
-
-      <button class="submit-btn" onclick="submitReview()" style="max-width:300px">Submit Review →</button>
-
-      <!-- Submitted Review Display -->
-      <div id="reviewSubmitted" style="display:none;margin-top:20px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:20px 24px">
-        <div style="font-size:1.5rem;margin-bottom:8px">🎉</div>
-        <div style="font-weight:700;font-size:1rem;color:#166534;margin-bottom:4px">Review Submitted!</div>
-        <div style="font-size:0.85rem;color:#166534;margin-bottom:12px">Thank you for your feedback. This helps the HATID community!</div>
-        <div id="reviewDisplay" style="background:white;border-radius:10px;padding:14px 16px;font-size:0.88rem;border:1px solid #bbf7d0"></div>
+      <button class="auth-submit" onclick="handleLogin()">Sign In →</button>
+      <div class="auth-divider">or</div>
+      <div class="auth-switch">Don't have an account? <a href="register.html">Create one here</a></div>
+      <div class="privacy-note">
+        <strong>🛡️ Data Privacy Notice:</strong> Your personal information is protected under the
+        <strong>Republic Act 10173 (Data Privacy Act of 2012)</strong>. We collect only what's necessary
+        to facilitate transactions. You have the right to access, correct, and request deletion of your data.
+        By signing in, you agree to our <a href="#" style="color:var(--gold)">Privacy Policy</a>.
       </div>
     </div>
-
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-brand">
-    <div class="logo">HA<span style="color:var(--gold)">TID</span></div>
-    <p>Helping Abroad Travelers Integrate Deliveries. The trusted marketplace for Filipino pasabuy transactions.</p>
-  </div>
-  <div>
-    <h4>Platform</h4>
-    <ul>
-      <li><a href="#">How It Works</a></li>
-      <li><a href="#">Browse Travelers</a></li>
-      <li><a href="#">Place an Order</a></li>
-      <li><a href="#">Track Order</a></li>
-    </ul>
-  </div>
-  <div>
-    <h4>Support</h4>
-    <ul>
-      <li><a href="#">Help Center</a></li>
-      <li><a href="#">Dispute Resolution</a></li>
-      <li><a href="#">Contact Us</a></li>
-      <li><a href="#">Safety Tips</a></li>
-    </ul>
-  </div>
-  <div>
-    <h4>Company</h4>
-    <ul>
-      <li><a href="#">About HATID</a></li>
-      <li><a href="#">Terms of Service</a></li>
-      <li><a href="#">Privacy Policy</a></li>
-      <li><a href="#">Careers</a></li>
-    </ul>
-  </div>
-</footer>
-<div class="footer-bottom">© 2025 HATID. All rights reserved. Built with ❤️ for Filipino travelers and buyers.</div>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="successModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="success-icon">🎉</div>
-    <h2>Order Submitted!</h2>
-    <p>Your request has been sent to <strong id="modalTraveler">the traveler</strong>. You'll receive a notification once they accept.</p>
-    <div style="background:var(--warm);border-radius:12px;padding:16px;margin-bottom:20px;font-size:0.85rem">
-      <div style="margin-bottom:6px"><strong>Item:</strong> <span id="modalItem">—</span></div>
-      <div style="margin-bottom:6px"><strong>Budget:</strong> PHP <span id="modalBudget">—</span></div>
-      <div><strong>Order ID:</strong> <span id="modalOrderId">—</span></div>
-    </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="closeModal()">Track My Order →</button>
   </div>
 </div>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
+<script>
+  let currentRole = 'buyer';
 
-<script src="hatid-script.js"></script>
+  // Demo accounts
+  const demoAccounts = {
+    'buyer@hatid.com':    { password: 'buyer123',    role: 'buyer',    name: 'Juan dela Cruz' },
+    'traveler@hatid.com': { password: 'traveler123', role: 'traveler', name: 'Maria Reyes' },
+  };
+
+  function setRole(role) {
+    currentRole = role;
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('roleBtn-' + role).classList.add('active');
+  }
+
+  function handleLogin() {
+    const email    = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const errEl    = document.getElementById('loginError');
+
+    if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.add('show'); return; }
+
+    const account = demoAccounts[email];
+    if (!account || account.password !== password || account.role !== currentRole) {
+      errEl.textContent = 'Invalid credentials or wrong account type selected.';
+      errEl.classList.add('show'); return;
+    }
+
+    errEl.classList.remove('show');
+    sessionStorage.setItem('hatid_user', JSON.stringify({ email, name: account.name, role: account.role }));
+    showToast('Welcome back, ' + account.name + '! 👋');
+    setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Allow Enter key
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+</script>
 </body>
 </html>
-
