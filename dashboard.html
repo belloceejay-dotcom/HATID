@@ -9,17 +9,34 @@
 </head>
 <body>
 
+<!-- NOTIFICATION BANNER -->
+<div class="notify-banner" id="notifyBanner" style="display:none"></div>
+
 <!-- NAV -->
 <nav>
-  <div class="logo">HA<span>TID</span></div>
+  <a href="index.html" class="logo">HA<span>TID</span></a>
   <ul class="nav-links">
     <li><a href="#how">How It Works</a></li>
     <li><a href="#listings">Find Travelers</a></li>
-    <li><a href="#order">Order Now</a></li>
+    <li><a href="#order" class="buyer-only">Order Now</a></li>
+    <li><a href="#myListings" class="traveler-only">My Listings</a></li>
     <li><a href="#tracker">Track Order</a></li>
-    <li><a href="#order" class="nav-cta">Get Started</a></li>
   </ul>
+  <div id="navRight"></div>
+  <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#how" onclick="toggleMobileMenu()">How It Works</a>
+  <a href="#listings" onclick="toggleMobileMenu()">Find Travelers</a>
+  <a href="#order" onclick="toggleMobileMenu()">Order Now</a>
+  <a href="#tracker" onclick="toggleMobileMenu()">Track Order</a>
+  <a href="login.html">Sign In</a>
+  <a href="register.html">Register</a>
+</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -42,10 +59,7 @@
       <div class="hcard hcard-main">
         <div class="traveler-avatar">MR</div>
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div>
-            <div style="font-weight:700;font-size:1rem">Maria R.</div>
-            <div style="color:var(--muted);font-size:0.78rem">⭐ 4.9 · 143 trips</div>
-          </div>
+          <div><div style="font-weight:700;font-size:1rem">Maria R.</div><div style="color:var(--muted);font-size:0.78rem">⭐ 4.9 · 143 trips</div></div>
           <span class="badge badge-green">✓ Verified</span>
         </div>
         <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
@@ -54,9 +68,7 @@
           <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">June 15–22, 2025</div>
         </div>
         <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
-          <span class="cat-tag">Skincare</span>
-          <span class="cat-tag">Fashion</span>
-          <span class="cat-tag">Snacks</span>
+          <span class="cat-tag">Skincare</span><span class="cat-tag">Fashion</span><span class="cat-tag">Snacks</span>
         </div>
       </div>
       <div class="hcard hcard-2">
@@ -69,7 +81,7 @@
         <div style="font-size:0.72rem;opacity:0.6;margin-bottom:6px">STATUS UPDATE</div>
         <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px">📦 Item Purchased!</div>
         <div style="font-size:0.8rem;opacity:0.7">Maria just bought your item</div>
-        <span class="badge badge-ink" style="margin-top:8px">In Transit</span>
+        <span class="badge badge-ink" style="margin-top:8px;display:inline-block">In Transit</span>
       </div>
     </div>
   </div>
@@ -80,30 +92,10 @@
   <p class="section-label">The Process</p>
   <h2 class="section-title">From abroad to your door, stress-free.</h2>
   <div class="steps-grid">
-    <div class="step-card">
-      <div class="step-num">01</div>
-      <div class="step-icon">🔍</div>
-      <h3>Browse Travelers</h3>
-      <p>Explore listings from verified OFWs and frequent travelers. Filter by destination, dates, and item categories.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">02</div>
-      <div class="step-icon">📋</div>
-      <h3>Submit a Request</h3>
-      <p>Send your product request with item name, link, budget, and quantity. Chat with your traveler directly on the platform.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">03</div>
-      <div class="step-icon">🔒</div>
-      <h3>Secure Payment</h3>
-      <p>Pay into our escrow system. Funds are only released to the traveler after you confirm safe delivery.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">04</div>
-      <div class="step-icon">📦</div>
-      <h3>Track &amp; Receive</h3>
-      <p>Monitor your order status in real-time — from purchase to transit to your hands. Rate the experience after.</p>
-    </div>
+    <div class="step-card"><div class="step-num">01</div><div class="step-icon">🔍</div><h3>Browse Travelers</h3><p>Explore listings from verified OFWs and frequent travelers. Filter by destination, dates, and categories.</p></div>
+    <div class="step-card"><div class="step-num">02</div><div class="step-icon">📋</div><h3>Submit a Request</h3><p>Send your request with item name, link, budget, and photos. Chat with your traveler directly on the platform.</p></div>
+    <div class="step-card"><div class="step-num">03</div><div class="step-icon">🔒</div><h3>Secure Payment</h3><p>Pay into our escrow. Orders over PHP 2,000 require 30% DP. Balance released only upon confirmed delivery.</p></div>
+    <div class="step-card"><div class="step-num">04</div><div class="step-icon">📦</div><h3>Track &amp; Receive</h3><p>Monitor your order in real-time — from purchase to transit to your hands. Rate the experience after.</p></div>
   </div>
 </section>
 
@@ -122,8 +114,41 @@
   <div class="listings-grid" id="listingsGrid"></div>
 </section>
 
-<!-- ORDER FORM -->
-<section id="order">
+<!-- TRAVELER: MY ITEM LISTINGS -->
+<section id="myListings" class="traveler-only" style="display:none;background:var(--warm)">
+  <p class="section-label">Traveler Dashboard</p>
+  <h2 class="section-title">Your Item Listings</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start">
+    <div>
+      <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:16px">➕ Add New Item</h3>
+      <div class="form-card" style="padding:24px">
+        <div class="form-group"><label>Item Name</label><input type="text" id="listItemName" placeholder="e.g. Shiseido Sunscreen SPF50+"></div>
+        <div class="form-group form-row">
+          <div><label>Price (PHP)</label><input type="number" id="listItemPrice" placeholder="1200"></div>
+          <div><label>Origin Country</label><input type="text" id="listItemOrigin" placeholder="Japan"></div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="listItemDesc" placeholder="Variant, size, where to buy..."></textarea></div>
+        <div class="form-group">
+          <label>Upload Item Photo</label>
+          <div class="upload-area" onclick="document.getElementById('listItemPhoto').click()">
+            <div style="font-size:2rem">📷</div>
+            <p>Click to upload photo of the item</p>
+          </div>
+          <input type="file" id="listItemPhoto" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
+          <div class="upload-preview" id="imagePreview"></div>
+        </div>
+        <button class="submit-btn" onclick="submitItemListing()">List This Item →</button>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:16px">📦 Your Current Listings</h3>
+      <div class="items-grid" id="itemsGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER FORM (Buyer only) -->
+<section id="order" class="buyer-only">
   <div class="order-grid">
     <div class="order-info">
       <p class="section-label">Place a Request</p>
@@ -132,9 +157,9 @@
       <div class="escrow-info">
         <h4>🔒 How Payment Escrow Works</h4>
         <div class="escrow-step"><div class="escrow-dot">1</div><span>Buyer pays into HATID escrow. Funds held securely.</span></div>
-        <div class="escrow-step"><div class="escrow-dot">2</div><span>Traveler purchases item and ships to buyer.</span></div>
-        <div class="escrow-step"><div class="escrow-dot">3</div><span>Buyer confirms receipt. Funds released to traveler.</span></div>
-        <div class="escrow-step"><div class="escrow-dot">4</div><span>Both parties rate each other. Trust grows.</span></div>
+        <div class="escrow-step"><div class="escrow-dot">2</div><span>Orders ≥ PHP 2,000 require 30% DP upfront.</span></div>
+        <div class="escrow-step"><div class="escrow-dot">3</div><span>Traveler purchases item and brings it to Manila.</span></div>
+        <div class="escrow-step"><div class="escrow-dot">4</div><span>Buyer confirms receipt. Remaining balance released.</span></div>
       </div>
     </div>
     <div class="form-card">
@@ -156,10 +181,29 @@
       <div class="form-group"><label>Item Name</label><input type="text" id="itemName" placeholder="e.g. Shiseido Anessa Sunscreen SPF50+ 60ml"></div>
       <div class="form-group"><label>Product Link (optional)</label><input type="url" id="itemLink" placeholder="https://www.amazon.co.jp/..."></div>
       <div class="form-group form-row">
-        <div><label>Budget (PHP)</label><input type="number" id="itemBudget" placeholder="1500"></div>
+        <div><label>Budget (PHP)</label><input type="number" id="itemBudget" placeholder="1500" oninput="onBudgetChange()"></div>
         <div><label>Quantity</label><input type="number" id="itemQty" placeholder="1" min="1"></div>
       </div>
+
+      <!-- DP Notice -->
+      <div class="dp-notice" id="dpNotice"></div>
+
+      <div class="form-group">
+        <label>Upload Reference Photo</label>
+        <div class="upload-area" onclick="document.getElementById('itemPhoto').click()">
+          <div style="font-size:2rem">🖼️</div>
+          <p>Click to upload a photo of the item you want</p>
+        </div>
+        <input type="file" id="itemPhoto" accept="image/*" multiple style="display:none" onchange="handleImageUpload(this)">
+        <div class="upload-preview" id="imagePreview"></div>
+      </div>
+
       <div class="form-group"><label>Special Instructions</label><textarea id="itemNotes" placeholder="Color, size, variant, or any specific notes..."></textarea></div>
+
+      <div style="background:var(--warm);border-radius:10px;padding:12px 14px;font-size:0.78rem;color:var(--muted);margin-bottom:12px;border-left:3px solid var(--gold);line-height:1.6">
+        🛡️ <strong style="color:var(--ink)">Data Privacy:</strong> Your name and contact details are shared only with your chosen traveler for transaction purposes, in accordance with <strong style="color:var(--ink)">RA 10173 (Data Privacy Act of 2012)</strong>.
+      </div>
+
       <button class="submit-btn" onclick="submitOrder()">Place Order Request →</button>
     </div>
   </div>
@@ -179,96 +223,30 @@
           <span class="badge badge-gold">Escrow: PHP 980 held</span>
         </div>
       </div>
-      <span class="badge badge-gold" id="orderStatusBadge" style="font-size:0.82rem;padding:5px 14px">In Transit</span>
+      <span class="badge badge-gold" style="font-size:0.82rem;padding:5px 14px">In Transit</span>
     </div>
-
-    <div class="tracker-steps" id="trackerSteps">
+    <div class="tracker-steps">
       <div class="tracker-step"><div class="step-circle step-done">✓</div><div class="step-content"><div class="step-name">Request Submitted</div><div class="step-time">June 12, 2025 · 10:32 AM</div></div></div>
       <div class="tracker-step"><div class="step-circle step-done">✓</div><div class="step-content"><div class="step-name">Order Accepted by Traveler</div><div class="step-time">June 12, 2025 · 2:15 PM</div><div class="step-note">Maria confirmed. 30% DP of PHP 420 charged. Remaining PHP 980 held in escrow.</div></div></div>
       <div class="tracker-step"><div class="step-circle step-done">✓</div><div class="step-content"><div class="step-name">Item Purchased</div><div class="step-time">June 16, 2025 · 11:00 AM</div><div class="step-note">Maria bought item from Don Quijote Shinjuku. Receipt uploaded.</div></div></div>
       <div class="tracker-step"><div class="step-circle step-active">✈️</div><div class="step-content"><div class="step-name">In Transit</div><div class="step-time">June 22, 2025 · Expected arrival</div><div class="step-note">Maria is flying back to Manila. Coordinate meetup via chat.</div></div></div>
-      <div class="tracker-step"><div class="step-circle step-pending" id="stepDelivered">📦</div><div class="step-content"><div class="step-name">Delivered — Awaiting Confirmation</div><div class="step-time">Pending</div></div></div>
-      <div class="tracker-step"><div class="step-circle step-pending" id="stepCompleted">⭐</div><div class="step-content"><div class="step-name">Completed &amp; Reviewed</div><div class="step-time" id="completedTime">Pending</div></div></div>
+      <div class="tracker-step"><div class="step-circle step-pending">📦</div><div class="step-content"><div class="step-name">Delivered — Awaiting Confirmation</div><div class="step-time">Pending</div></div></div>
+      <div class="tracker-step"><div class="step-circle step-pending">⭐</div><div class="step-content"><div class="step-name">Completed &amp; Reviewed</div><div class="step-time">Pending</div></div></div>
     </div>
 
     <!-- Cancel Warning -->
-    <div class="cancel-warning" id="cancelWarningBox">
+    <div class="cancel-warning">
       <h4>⚠️ Cancellation Policy</h4>
-      <p>Cancelling at this stage (<em>item already purchased</em>) is <strong>not allowed</strong> without a dispute.</p>
+      <p>Cancelling at this stage (<em>item already purchased</em>) is <strong>not allowed</strong> without a dispute. If there is an issue, use the Dispute button below.</p>
       <span class="penalty-tag">Buyer penalty: 5% if cancelled after acceptance</span>
       <span class="penalty-tag" style="margin-left:6px">Traveler penalty: 10% if cancelled after acceptance</span>
     </div>
 
-    <!-- Action Buttons -->
-    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap" id="trackerActions">
+    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-outline" style="font-size:0.85rem;padding:10px 20px" onclick="showToast('Opening chat with Maria...')">💬 Message Traveler</button>
-      <button class="btn btn-gold" style="font-size:0.85rem;padding:10px 20px" id="confirmDeliveryBtn" onclick="confirmDelivery()">✅ Confirm Delivery</button>
-      <button class="btn btn-danger" style="font-size:0.85rem;padding:10px 20px" id="cancelOrderBtn" onclick="showCancelModal('buyer')">🚫 Cancel Order</button>
+      <button class="btn btn-gold" style="font-size:0.85rem;padding:10px 20px" onclick="showToast('✅ Delivery confirmed! Final payment releasing to traveler...')">✅ Confirm Delivery</button>
+      <button class="btn btn-danger" style="font-size:0.85rem;padding:10px 20px" onclick="showCancelModal('buyer')">🚫 Cancel Order</button>
     </div>
-
-    <!-- RATINGS & REVIEW FORM (hidden until delivery confirmed) -->
-    <div id="reviewSection" style="display:none;margin-top:28px;border-top:2px solid var(--border);padding-top:28px">
-      <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:6px">⭐ Rate Your Experience</h3>
-      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px">Delivery confirmed! Escrow released to traveler. Please rate your transaction with <strong>Maria R.</strong></p>
-
-      <!-- Star Rating -->
-      <div style="margin-bottom:20px">
-        <label style="font-size:0.8rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:block">Overall Rating</label>
-        <div class="star-rating" id="starRating">
-          <span class="star" data-value="1" onclick="setRating(1)">★</span>
-          <span class="star" data-value="2" onclick="setRating(2)">★</span>
-          <span class="star" data-value="3" onclick="setRating(3)">★</span>
-          <span class="star" data-value="4" onclick="setRating(4)">★</span>
-          <span class="star" data-value="5" onclick="setRating(5)">★</span>
-        </div>
-        <div id="ratingLabel" style="font-size:0.82rem;color:var(--muted);margin-top:6px">Click a star to rate</div>
-      </div>
-
-      <!-- Category Ratings -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px">
-        <div style="background:var(--warm);border-radius:10px;padding:12px 14px">
-          <div style="font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Communication</div>
-          <div class="mini-stars" id="stars-comm" data-cat="comm">
-            <span onclick="setMiniRating('comm',1)">★</span><span onclick="setMiniRating('comm',2)">★</span><span onclick="setMiniRating('comm',3)">★</span><span onclick="setMiniRating('comm',4)">★</span><span onclick="setMiniRating('comm',5)">★</span>
-          </div>
-        </div>
-        <div style="background:var(--warm);border-radius:10px;padding:12px 14px">
-          <div style="font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Item Accuracy</div>
-          <div class="mini-stars" id="stars-accuracy" data-cat="accuracy">
-            <span onclick="setMiniRating('accuracy',1)">★</span><span onclick="setMiniRating('accuracy',2)">★</span><span onclick="setMiniRating('accuracy',3)">★</span><span onclick="setMiniRating('accuracy',4)">★</span><span onclick="setMiniRating('accuracy',5)">★</span>
-          </div>
-        </div>
-        <div style="background:var(--warm);border-radius:10px;padding:12px 14px">
-          <div style="font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Delivery Speed</div>
-          <div class="mini-stars" id="stars-speed" data-cat="speed">
-            <span onclick="setMiniRating('speed',1)">★</span><span onclick="setMiniRating('speed',2)">★</span><span onclick="setMiniRating('speed',3)">★</span><span onclick="setMiniRating('speed',4)">★</span><span onclick="setMiniRating('speed',5)">★</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Written Review -->
-      <div style="margin-bottom:16px">
-        <label style="font-size:0.8rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block">Written Review</label>
-        <textarea id="reviewText" placeholder="Share your experience with Maria R. — was the item as expected? Was communication good?" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid var(--border);font-family:inherit;font-size:0.9rem;background:var(--cream);color:var(--ink);outline:none;resize:vertical;min-height:100px"></textarea>
-      </div>
-
-      <!-- Recommend Toggle -->
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;background:var(--warm);padding:12px 16px;border-radius:10px">
-        <input type="checkbox" id="recommendCheck" style="width:18px;height:18px;accent-color:var(--gold)">
-        <label for="recommendCheck" style="font-size:0.88rem;font-weight:500;color:var(--ink);text-transform:none;letter-spacing:0">👍 I would recommend this traveler to other buyers</label>
-      </div>
-
-      <button class="submit-btn" onclick="submitReview()" style="max-width:300px">Submit Review →</button>
-
-      <!-- Submitted Review Display -->
-      <div id="reviewSubmitted" style="display:none;margin-top:20px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:20px 24px">
-        <div style="font-size:1.5rem;margin-bottom:8px">🎉</div>
-        <div style="font-weight:700;font-size:1rem;color:#166534;margin-bottom:4px">Review Submitted!</div>
-        <div style="font-size:0.85rem;color:#166534;margin-bottom:12px">Thank you for your feedback. This helps the HATID community!</div>
-        <div id="reviewDisplay" style="background:white;border-radius:10px;padding:14px 16px;font-size:0.88rem;border:1px solid #bbf7d0"></div>
-      </div>
-    </div>
-
   </div>
 </section>
 
@@ -277,63 +255,54 @@
   <div class="footer-brand">
     <div class="logo">HA<span style="color:var(--gold)">TID</span></div>
     <p>Helping Abroad Travelers Integrate Deliveries. The trusted marketplace for Filipino pasabuy transactions.</p>
+    <div style="margin-top:14px;font-size:0.75rem;color:rgba(250,246,239,0.4);line-height:1.6">
+      Protected under <strong style="color:rgba(250,246,239,0.6)">RA 10173 – Data Privacy Act of 2012</strong>
+    </div>
   </div>
-  <div>
-    <h4>Platform</h4>
-    <ul>
-      <li><a href="#">How It Works</a></li>
-      <li><a href="#">Browse Travelers</a></li>
-      <li><a href="#">Place an Order</a></li>
-      <li><a href="#">Track Order</a></li>
-    </ul>
-  </div>
-  <div>
-    <h4>Support</h4>
-    <ul>
-      <li><a href="#">Help Center</a></li>
-      <li><a href="#">Dispute Resolution</a></li>
-      <li><a href="#">Contact Us</a></li>
-      <li><a href="#">Safety Tips</a></li>
-    </ul>
-  </div>
-  <div>
-    <h4>Company</h4>
-    <ul>
-      <li><a href="#">About HATID</a></li>
-      <li><a href="#">Terms of Service</a></li>
-      <li><a href="#">Privacy Policy</a></li>
-      <li><a href="#">Careers</a></li>
-    </ul>
-  </div>
+  <div><h4>Platform</h4><ul><li><a href="#">How It Works</a></li><li><a href="#">Browse Travelers</a></li><li><a href="#">Place an Order</a></li><li><a href="#">Track Order</a></li></ul></div>
+  <div><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Dispute Resolution</a></li><li><a href="#">Contact Us</a></li><li><a href="#">Safety Tips</a></li></ul></div>
+  <div><h4>Legal</h4><ul><li><a href="#">About HATID</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Anti-Scam Policy</a></li></ul></div>
 </footer>
-<div class="footer-bottom">© 2025 HATID. All rights reserved. Built with ❤️ for Filipino travelers and buyers.</div>
+<div class="footer-bottom">© 2025 HATID. All rights reserved. Built with ❤️ for Filipino travelers and buyers. | Data Privacy Officer: privacy@hatid.com</div>
 
-<!-- MODAL -->
+<!-- SUCCESS MODAL -->
 <div class="modal-overlay" id="successModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
+    <button class="modal-close" onclick="closeSuccessModal()">✕</button>
     <div class="success-icon">🎉</div>
     <h2>Order Submitted!</h2>
-    <p>Your request has been sent to <strong id="modalTraveler">the traveler</strong>. You'll receive a notification once they accept.</p>
-    <div style="background:var(--warm);border-radius:12px;padding:16px;margin-bottom:20px;font-size:0.85rem">
-      <div style="margin-bottom:6px"><strong>Item:</strong> <span id="modalItem">—</span></div>
-      <div style="margin-bottom:6px"><strong>Budget:</strong> PHP <span id="modalBudget">—</span></div>
-      <div><strong>Order ID:</strong> <span id="modalOrderId">—</span></div>
+    <p>Your request has been sent to <strong id="modalTraveler"></strong>. You'll be notified by email once they accept.</p>
+    <div class="modal-summary">
+      <div><strong>Item:</strong> <span id="modalItem"></span></div>
+      <div><strong>Budget:</strong> PHP <span id="modalBudget"></span></div>
+      <div id="modalDpRow"><strong>Down Payment (30%):</strong> <span id="modalDp" style="color:var(--gold);font-weight:700"></span></div>
+      <div><strong>Order ID:</strong> <span id="modalOrderId"></span></div>
     </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="closeModal()">Track My Order →</button>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-size:0.8rem;color:#166534;margin-bottom:16px">
+      📧 A confirmation email has been sent to your registered address. Your personal data is handled per <strong>RA 10173</strong>.
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="closeSuccessModal()">Track My Order →</button>
   </div>
 </div>
 
-<!-- TOAST -->
+<!-- CANCEL MODAL -->
+<div class="modal-overlay" id="cancelModal">
+  <div class="modal modal-danger">
+    <button class="modal-close" onclick="closeModal('cancelModal')">✕</button>
+    <div class="success-icon">🚫</div>
+    <h2>Cancel Order?</h2>
+    <p>Please review the cancellation penalties before proceeding.</p>
+    <div class="modal-summary" style="background:#fef2f2;border:1px solid #fecaca">
+      <div id="cancelPenaltyMsg" style="font-size:0.85rem;line-height:1.8;color:#7f1d1d"></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outline" style="flex:1;justify-content:center" onclick="closeModal('cancelModal')">Keep Order</button>
+      <button class="btn btn-danger" style="flex:1;justify-content:center" onclick="confirmCancel()">Confirm Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
-
-<script>
-  const user = sessionStorage.getItem('hatid_user');
-
-  if (!user) {
-    window.location.href = 'index.html';
-  }
-</script>>
+<script src="hatid-script.js"></script>
 </body>
 </html>
-
