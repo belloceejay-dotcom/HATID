@@ -194,7 +194,7 @@
     errEl.classList.remove('show');
     sessionStorage.setItem('hatid_user', JSON.stringify({ email, name: account.name, role: account.role }));
     showToast('Welcome back, ' + account.name + '! 👋');
-    setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
   }
 
   function showToast(msg) {
