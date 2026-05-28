@@ -262,96 +262,29 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
-// ─── RATINGS & REVIEW ───────────────────────────────────────
-let currentRating = 0;
-const miniRatings = { comm: 0, accuracy: 0, speed: 0 };
-const ratingLabels = ['', 'Poor 😕', 'Fair 🙂', 'Good 👍', 'Great 😊', 'Excellent! 🌟'];
 
-function confirmDelivery() {
-  // Update tracker steps
-  document.getElementById('stepDelivered').className = 'step-circle step-done';
-  document.getElementById('stepDelivered').textContent = '✓';
-  document.getElementById('stepCompleted').className  = 'step-circle step-active';
+function handleLogin() {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  const errEl    = document.getElementById('loginError');
 
-  // Hide action buttons, hide cancel warning
-  document.getElementById('confirmDeliveryBtn').style.display = 'none';
-  document.getElementById('cancelOrderBtn').style.display     = 'none';
-  document.getElementById('cancelWarningBox').style.display   = 'none';
+  if (!email || !password) {
+    errEl.textContent = 'Please fill in all fields.';
+    errEl.classList.add('show');
+    return;
+  }
 
-  // Update status badge
-  const badge = document.getElementById('orderStatusBadge');
-  badge.textContent  = 'Delivered ✓';
-  badge.className    = 'badge badge-green';
+  const account = demoAccounts[email];
+  if (!account || account.password !== password || account.role !== currentRole) {
+    errEl.textContent = 'Invalid credentials or wrong account type selected.';
+    errEl.classList.add('show');
+    return;
+  }
 
-  // Show review section
-  document.getElementById('reviewSection').style.display = 'block';
-  document.getElementById('reviewSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  errEl.classList.remove('show');
+  sessionStorage.setItem('hatid_user', JSON.stringify({ email, name: account.name, role: account.role }));
+  showToast('Welcome back, ' + account.name + '! 👋');
 
-  showToast('✅ Delivery confirmed! Escrow released to traveler.');
-}
-
-function setRating(val) {
-  currentRating = val;
-  document.querySelectorAll('.star-rating .star').forEach((s, i) => {
-    s.classList.toggle('active', i < val);
-  });
-  document.getElementById('ratingLabel').textContent = ratingLabels[val];
-  document.getElementById('ratingLabel').style.color = 'var(--gold)';
-  document.getElementById('ratingLabel').style.fontWeight = '600';
-}
-
-function setMiniRating(cat, val) {
-  miniRatings[cat] = val;
-  document.querySelectorAll(`#stars-${cat} span`).forEach((s, i) => {
-    s.classList.toggle('active', i < val);
-  });
-}
-
-function submitReview() {
-  if (!currentRating) { showToast('⚠️ Please select an overall star rating.'); return; }
-
-  const reviewText  = document.getElementById('reviewText').value.trim();
-  const recommended = document.getElementById('recommendCheck').checked;
-  const stars       = '★'.repeat(currentRating) + '☆'.repeat(5 - currentRating);
-
-  // Build display
-  const display = document.getElementById('reviewDisplay');
-  display.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-      <div>
-        <div style="font-weight:700;font-size:0.95rem">Maria R.</div>
-        <div style="color:var(--gold);font-size:1.1rem;letter-spacing:2px">${stars}</div>
-      </div>
-      <div style="font-size:0.75rem;color:var(--muted)">${new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})}</div>
-    </div>
-    <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-      ${miniRatings.comm     ? `<span style="background:#fff3e0;color:var(--gold);padding:2px 8px;border-radius:100px;font-size:0.75rem;font-weight:600">Communication ${'★'.repeat(miniRatings.comm)}</span>` : ''}
-      ${miniRatings.accuracy ? `<span style="background:#fff3e0;color:var(--gold);padding:2px 8px;border-radius:100px;font-size:0.75rem;font-weight:600">Item Accuracy ${'★'.repeat(miniRatings.accuracy)}</span>` : ''}
-      ${miniRatings.speed    ? `<span style="background:#fff3e0;color:var(--gold);padding:2px 8px;border-radius:100px;font-size:0.75rem;font-weight:600">Delivery Speed ${'★'.repeat(miniRatings.speed)}</span>` : ''}
-    </div>
-    ${reviewText ? `<div style="font-size:0.88rem;color:var(--ink);line-height:1.6;margin-bottom:8px">"${reviewText}"</div>` : ''}
-    ${recommended ? `<div style="font-size:0.82rem;color:var(--sage);font-weight:600">👍 Recommends this traveler</div>` : ''}
-  `;
-
-  // Update completed step
-  document.getElementById('stepCompleted').className  = 'step-circle step-done';
-  document.getElementById('stepCompleted').textContent = '✓';
-  document.getElementById('completedTime').textContent = 'Just now';
-
-  // Update badge
-  const badge = document.getElementById('orderStatusBadge');
-  badge.textContent = 'Completed ⭐';
-  badge.className   = 'badge badge-green';
-
-  // Hide form, show submitted card
-  document.querySelector('#reviewSection .submit-btn').style.display = 'none';
-  document.querySelector('#reviewSection textarea').style.display    = 'none';
-  document.querySelector('#reviewSection .star-rating').parentElement.style.display = 'none';
-  document.querySelectorAll('#reviewSection > div:not(#reviewSubmitted)').forEach(el => {
-    if (!el.querySelector('h3') && el.id !== 'reviewSubmitted') el.style.display = 'none';
-  });
-  document.getElementById('reviewSubmitted').style.display = 'block';
-  document.getElementById('reviewSubmitted').scrollIntoView({ behavior: 'smooth' });
-
-  showToast('⭐ Review submitted! Salamat sa feedback.');
+  // ✅ Redirect straight to dashboard
+  setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
 }
