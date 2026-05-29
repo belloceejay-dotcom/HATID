@@ -6,12 +6,31 @@ function initNav() {
   if (!navRight) return;
   if (currentUser) {
     const initials = currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-    navRight.innerHTML = `
-      <div class="nav-user">
-        <div class="nav-avatar">${initials}</div>
-        <div><div class="nav-name">${currentUser.name}</div><div class="nav-role">${currentUser.role === 'traveler' ? '✈️ Traveler' : '🛍️ Buyer'}</div></div>
-        <button class="logout-btn" onclick="logout()">Sign Out</button>
-      </div>`;
+   navRight.innerHTML = `
+  <div class="nav-user dropdown">
+    
+    <div class="nav-profile" onclick="toggleProfileMenu()">
+      <div class="nav-avatar">${initials}</div>
+
+      <div>
+        <div class="nav-name">${currentUser.name}</div>
+        <div class="nav-role">
+          ${currentUser.role === 'traveler'
+            ? '✈️ Traveler Seller'
+            : '🛍️ Buyer'}
+        </div>
+      </div>
+
+      <div class="dropdown-arrow">▾</div>
+    </div>
+
+    <div class="profile-menu" id="profileMenu">
+      <button onclick="showToast('Opening profile...')">👤 Profile</button>
+      <button onclick="showToast('Opening settings...')">⚙️ Settings</button>
+      <button onclick="logout()" class="danger">🚪 Sign Out</button>
+    </div>
+
+  </div>`;
     renderRoleView();
   } else {
     navRight.innerHTML = `
@@ -27,14 +46,54 @@ function logout() {
   showToast('Signed out. See you next time! 👋');
   setTimeout(() => location.reload(), 1000);
 }
-
+function toggleProfileMenu() {
+  document.getElementById('profileMenu')?.classList.toggle('show');
+}
 function renderRoleView() {
   if (!currentUser) return;
-  // Show/hide sections based on role
+
   const travelerSections = document.querySelectorAll('.traveler-only');
-  const buyerSections    = document.querySelectorAll('.buyer-only');
-  travelerSections.forEach(el => el.style.display = currentUser.role === 'traveler' ? '' : 'none');
-  buyerSections.forEach(el    => el.style.display = currentUser.role === 'buyer'    ? '' : 'none');
+  const buyerSections = document.querySelectorAll('.buyer-only');
+
+  const listingsSection = document.getElementById('listings');
+  const heroTitle = document.querySelector('#hero h1');
+  const heroSub = document.querySelector('.hero-sub');
+
+  if (currentUser.role === 'traveler') {
+    document.body.classList.add('traveler-mode');
+
+    // SHOW traveler sections
+    travelerSections.forEach(el => el.style.display = '');
+
+    // HIDE buyer sections
+    buyerSections.forEach(el => el.style.display = 'none');
+
+    // CHANGE HERO TEXT
+    if (heroTitle) {
+      heroTitle.innerHTML = `Your Seller Dashboard,<br>manage orders with ease.`;
+    }
+
+    if (heroSub) {
+      heroSub.textContent =
+        'Track incoming requests, manage listings, and earn through trusted pasabuy transactions.';
+    }
+
+    // OPTIONAL: hide traveler browsing
+    if (listingsSection) {
+      listingsSection.style.display = 'none';
+    }
+
+  } else {
+    document.body.classList.remove('traveler-mode');
+
+    // BUYER VIEW
+    travelerSections.forEach(el => el.style.display = 'none');
+    buyerSections.forEach(el => el.style.display = '');
+
+    if (listingsSection) {
+      listingsSection.style.display = '';
+    }
+  }
 }
 
 // Hamburger menu
@@ -61,14 +120,16 @@ function renderListings(data) {
         <div class="listing-route">${l.flag} ${l.route}</div>
         <div class="listing-dates">✈️ ${l.dates}</div>
       </div>
-      <div class="listing-body">
+     <div class="listing-body card-flex">
         <div class="traveler-row">
           <div class="avatar ${l.avatarClass}">${l.avatar}</div>
           <div class="traveler-info">
             <div class="traveler-name">${l.name}</div>
-            <div class="stars">⭐ ${l.rating} · ${l.trips} trips</div>
+            <div class="trip-meta">
+  ⭐ ${l.rating} · ${l.trips} trips
+</div>
           </div>
-          <span class="badge badge-green">✓ Verified</span>
+          <span class="verified-icon" title="Verified Traveler">✔</span>
         </div>
         <div class="listing-details">
           <div class="detail-item"><div class="detail-label">Capacity</div><div class="detail-value">${l.capacity}</div></div>
@@ -118,7 +179,9 @@ function onBudgetChange() {
 
 // ─── IMAGE UPLOAD PREVIEW ───────────────────────────────────
 function handleImageUpload(input) {
-  const preview = document.getElementById('imagePreview');
+  const preview = input.id === 'itemPhoto'
+  ? document.getElementById('orderImagePreview')
+  : document.getElementById('listingImagePreview');
   if (!preview) return;
   preview.innerHTML = '';
   Array.from(input.files).forEach(file => {
@@ -287,4 +350,72 @@ function handleLogin() {
 
   // ✅ Redirect straight to dashboard
   setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+}
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('profileMenu');
+  const profile = document.querySelector('.nav-profile');
+
+  if (!menu || !profile) return;
+
+  if (!profile.contains(e.target) && !menu.contains(e.target)) {
+    menu.classList.remove('show');
+  }
+});
+
+let selectedRating = 0;
+
+function openRatingModal() {
+  document.getElementById('ratingModal').classList.add('open');
+  renderStars();
+}
+
+function renderStars() {
+  const container = document.getElementById('starRating');
+  container.innerHTML = '';
+
+  for (let i = 1; i <= 5; i++) {
+    const star = document.createElement('span');
+    star.textContent = i <= selectedRating ? '⭐' : '☆';
+    star.onclick = () => {
+      selectedRating = i;
+      renderStars();
+    };
+    container.appendChild(star);
+  }
+}
+function submitRating() {
+  const comment = document.getElementById('ratingComment').value;
+
+  if (selectedRating === 0) {
+    showToast('Please select a rating');
+    return;
+  }
+
+  showToast(`Thanks for ${selectedRating}⭐ rating!`);
+
+  console.log({
+    rating: selectedRating,
+    comment
+  });
+
+  // reset
+  selectedRating = 0;
+  document.getElementById('ratingComment').value = '';
+
+  closeModal('ratingModal');
+}
+
+function confirmDelivery() {
+  showToast('Delivery confirmed! 🎉');
+
+  // after short delay, open rating modal
+  setTimeout(() => {
+    openRatingModal();
+  }, 500);
+}
+function openRatingModal() {
+  const modal = document.getElementById('ratingModal');
+  if (!modal) return;
+  modal.classList.add('open');
+  renderStars();
 }
