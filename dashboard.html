@@ -86,6 +86,31 @@
     </div>
   </div>
 </section>
+<section id="travelerStats" class="traveler-only" style="display:none">
+  <div class="stats-grid">
+
+    <div class="dash-card">
+      <h3>₱24,500</h3>
+      <p>Total Earnings</p>
+    </div>
+
+    <div class="dash-card">
+      <h3>18</h3>
+      <p>Pending Orders</p>
+    </div>
+
+    <div class="dash-card">
+      <h3>4.9★</h3>
+      <p>Seller Rating</p>
+    </div>
+
+    <div class="dash-card">
+      <h3>143</h3>
+      <p>Completed Trips</p>
+    </div>
+
+  </div>
+</section>
 
 <!-- HOW IT WORKS -->
 <section id="how">
@@ -135,7 +160,7 @@
             <p>Click to upload photo of the item</p>
           </div>
           <input type="file" id="listItemPhoto" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
-          <div class="upload-preview" id="imagePreview"></div>
+          <div class="upload-preview" id="listingImagePreview"></div>
         </div>
         <button class="submit-btn" onclick="submitItemListing()">List This Item →</button>
       </div>
@@ -195,7 +220,7 @@
           <p>Click to upload a photo of the item you want</p>
         </div>
         <input type="file" id="itemPhoto" accept="image/*" multiple style="display:none" onchange="handleImageUpload(this)">
-        <div class="upload-preview" id="imagePreview"></div>
+        <div class="upload-preview" id="orderImagePreview"></div>
       </div>
 
       <div class="form-group"><label>Special Instructions</label><textarea id="itemNotes" placeholder="Color, size, variant, or any specific notes..."></textarea></div>
@@ -299,6 +324,25 @@
       <button class="btn btn-outline" style="flex:1;justify-content:center" onclick="closeModal('cancelModal')">Keep Order</button>
       <button class="btn btn-danger" style="flex:1;justify-content:center" onclick="confirmCancel()">Confirm Cancel</button>
     </div>
+  </div>
+</div>
+<div class="modal-overlay" id="ratingModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('ratingModal')">✖</button>
+
+    <h2>Rate Your Traveler</h2>
+    <p>How was your experience with this delivery?</p>
+
+    <div id="starRating" style="font-size:2rem; cursor:pointer; margin:10px 0;">
+      ☆ ☆ ☆ ☆ ☆
+    </div>
+
+    <textarea id="ratingComment" placeholder="Leave a comment (optional)"></textarea>
+
+    <button class="btn btn-primary" style="width:100%; margin-top:12px;"
+      onclick="submitRating()">
+      Submit Rating
+    </button>
   </div>
 </div>
 
