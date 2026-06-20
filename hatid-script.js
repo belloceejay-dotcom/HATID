@@ -138,6 +138,10 @@ function renderListings(data) {
         <div class="categories">${l.cats.map(c => `<span class="cat-tag">${c}</span>`).join('')}</div>
         <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:0.88rem"
           onclick="selectTraveler('${l.name}','${l.route}','${l.dates}')">Request to This Traveler →</button>
+          ${l.id === 1
+  ? `<button class="view-items-btn" onclick="openTravelerItems()">🛍️ View Maria's Listed Items</button>`
+  : ''}
+
       </div>
     </div>`).join('');
 }
@@ -196,41 +200,7 @@ function handleImageUpload(input) {
 }
 
 // ─── ORDER SUBMISSION ───────────────────────────────────────
-function submitOrder() {
-  if (!currentUser) { showToast('⚠️ Please sign in first.'); setTimeout(() => { window.location.href = 'login.html'; }, 1200); return; }
 
-  const name     = document.getElementById('buyerName').value.trim();
-  const traveler = document.getElementById('selectedTraveler');
-  const item     = document.getElementById('itemName').value.trim();
-  const budget   = parseFloat(document.getElementById('itemBudget').value) || 0;
-
-  if (!name || !item || !traveler.value || !budget) { showToast('⚠️ Please fill in all required fields.'); return; }
-
-  const orderId  = 'HTD-2025-' + String(Math.floor(Math.random() * 9000) + 1000);
-  const requiresDP = budget >= DP_THRESHOLD;
-  const dp       = (budget * DP_RATE).toFixed(2);
-
-  document.getElementById('modalTraveler').textContent = traveler.options[traveler.selectedIndex].text;
-  document.getElementById('modalItem').textContent     = item;
-  document.getElementById('modalBudget').textContent   = budget.toLocaleString('en-PH', { minimumFractionDigits: 2 });
-  document.getElementById('modalOrderId').textContent  = orderId;
-
-  const dpRow = document.getElementById('modalDpRow');
-  if (requiresDP && dpRow) {
-    dpRow.style.display = '';
-    document.getElementById('modalDp').textContent = 'PHP ' + parseFloat(dp).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-  } else if (dpRow) { dpRow.style.display = 'none'; }
-
-  document.getElementById('successModal').classList.add('open');
-
-  // Reset
-  ['buyerName','buyerContact','itemName','itemLink','itemBudget','itemQty','itemNotes'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
-  if (traveler) traveler.selectedIndex = 0;
-  const dpNotice = document.getElementById('dpNotice'); if (dpNotice) dpNotice.classList.remove('show');
-  const preview  = document.getElementById('imagePreview'); if (preview) preview.innerHTML = '';
-}
 
 // ─── CANCELLATION ───────────────────────────────────────────
 // Penalty rules:
@@ -303,10 +273,6 @@ function closeModal(id) {
   document.getElementById(id || 'successModal').classList.remove('open');
 }
 
-function closeSuccessModal() {
-  closeModal('successModal');
-  document.getElementById('tracker').scrollIntoView({ behavior: 'smooth' });
-}
 
 // Close on overlay click
 document.addEventListener('DOMContentLoaded', () => {
@@ -413,9 +379,211 @@ function confirmDelivery() {
     openRatingModal();
   }, 500);
 }
-function openRatingModal() {
-  const modal = document.getElementById('ratingModal');
-  if (!modal) return;
-  modal.classList.add('open');
-  renderStars();
+
+// ─── PASTE THIS BLOCK ANYWHERE NEAR THE BOTTOM OF hatid-script.js ───────────
+
+// ─── MARIA'S LISTED ITEMS ───────────────────────────────────────────────────
+const mariaItems = [
+  { id: 'm1', emoji: '🧴', name: 'Shiseido Anessa Sunscreen SPF50+', desc: '60ml · Don Quijote exclusive', price: 1400 },
+  { id: 'm2', emoji: '💄', name: 'CANMAKE Moist Lasting Tint',       desc: 'Lip tint · all shades available', price: 450 },
+  { id: 'm3', emoji: '🍫', name: 'Royce Nama Chocolate (Milk)',       desc: 'Standard box · refrigerated packaging', price: 850 },
+  { id: 'm4', emoji: '👜', name: 'Marimekko Tote Bag',                desc: 'Original from Marimekko Japan store', price: 2200 },
+  { id: 'm5', emoji: '🧖', name: 'Hada Labo Gokujyun Lotion',        desc: '170ml pump bottle', price: 650 },
+];
+
+// Open Maria's items modal (called from listing card button)
+function openTravelerItems() {
+  const grid = document.getElementById('mariaItemsGrid');
+  if (!grid) return;
+  grid.innerHTML = mariaItems.map(item => `
+    <div class="ti-card" onclick="requestMariasItem('${item.id}')">
+      <div class="ti-emoji">${item.emoji}</div>
+      <div class="ti-info">
+        <div class="ti-name">${item.name}</div>
+        <div class="ti-desc">${item.desc}</div>
+      </div>
+      <div class="ti-right">
+        <div class="ti-price">₱${item.price.toLocaleString()}</div>
+        <button class="ti-req-btn" onclick="event.stopPropagation();requestMariasItem('${item.id}')">Request</button>
+      </div>
+    </div>`).join('');
+  document.getElementById('travelerItemsModal').classList.add('open');
+}
+
+// Pre-fill order form from Maria's item
+function requestMariasItem(itemId) {
+  const item = mariaItems.find(i => i.id === itemId);
+  if (!item) return;
+  closeModal('travelerItemsModal');
+
+  // Pre-fill order form
+  const selTraveler = document.getElementById('selectedTraveler');
+  if (selTraveler) {
+    // Find or create Maria option
+    let found = false;
+    for (let o of selTraveler.options) {
+      if (o.text.includes('Maria')) { o.selected = true; found = true; break; }
+    }
+    if (!found) {
+      const opt = new Option('Maria R. · Tokyo → Manila (Jun 15)', 'maria', true, true);
+      selTraveler.add(opt);
+    }
+  }
+
+  const nameEl   = document.getElementById('itemName');
+  const budgetEl = document.getElementById('itemBudget');
+  const qtyEl    = document.getElementById('itemQty');
+  const notesEl  = document.getElementById('itemNotes');
+
+  if (nameEl)   nameEl.value   = item.name;
+  if (budgetEl) budgetEl.value = item.price;
+  if (qtyEl)    qtyEl.value    = 1;
+  if (notesEl)  notesEl.value  = item.desc;
+
+  onBudgetChange();
+  document.getElementById('order').scrollIntoView({ behavior: 'smooth' });
+  showToast(`✅ Pre-filled: ${item.name}`);
+}
+
+function customRequestMaria() {
+  closeModal('travelerItemsModal');
+  const selTraveler = document.getElementById('selectedTraveler');
+  if (selTraveler) {
+    for (let o of selTraveler.options) {
+      if (o.text.includes('Maria')) { o.selected = true; break; }
+    }
+  }
+  document.getElementById('order').scrollIntoView({ behavior: 'smooth' });
+  showToast('Maria selected! Fill in your custom request below.');
+}
+
+// ─── PAYMENT MODAL ──────────────────────────────────────────────────────────
+let payOrder       = {};
+let payMethod      = '';
+
+// Called by submitOrder() — replace the existing successModal open with this
+function openPaymentModal(order) {
+  payOrder  = order;
+  payMethod = '';
+
+  const total   = order.budget * order.qty;
+  const isDP    = total >= DP_THRESHOLD;
+  const dp      = isDP ? Math.round(total * DP_RATE) : total;
+  const balance = total - dp;
+
+  payOrder.total   = total;
+  payOrder.dp      = dp;
+  payOrder.isDP    = isDP;
+  payOrder.balance = balance;
+  payOrder.orderId = 'HTD-2025-' + String(Math.floor(Math.random() * 9000) + 1000);
+
+  const travelerLabel = document.querySelector('#selectedTraveler option:checked')?.textContent || order.traveler;
+
+  // Step 1 — Review
+  document.getElementById('payReviewSummary').innerHTML = `
+    <div><strong>Buyer:</strong> ${order.name} · ${order.contact}</div>
+    <div><strong>Traveler:</strong> ${travelerLabel}</div>
+    <div><strong>Item:</strong> ${order.item}</div>
+    <div><strong>Budget:</strong> ₱${order.budget.toLocaleString()} × ${order.qty} = ₱${total.toLocaleString()}</div>`;
+
+  const amountHTML = `
+    <div class="pay-row"><span>Item Total</span><span>₱${total.toLocaleString()}</span></div>
+    ${isDP ? `<div class="pay-row"><span>Balance (held in escrow)</span><span>₱${balance.toLocaleString()}</span></div>` : ''}
+    <div class="pay-row pay-total"><span>${isDP ? '30% DP Due Now' : 'Amount Due Now'}</span><span>₱${dp.toLocaleString()}</span></div>`;
+
+  document.getElementById('payAmountBox').innerHTML  = amountHTML;
+  document.getElementById('payAmountBox2').innerHTML = amountHTML;
+
+  goPayStep(1);
+  document.getElementById('paymentModal').classList.add('open');
+}
+
+function goPayStep(n) {
+  [1, 2, 3].forEach(i => {
+    document.getElementById(`payStep${i}`).style.display = i === n ? 'block' : 'none';
+    const dot = document.getElementById(`pdot${i}`);
+    if (dot) dot.className = 'pdot' + (i < n ? ' pdot-done' : i === n ? ' pdot-active' : '');
+  });
+  if (n === 2) {
+    payMethod = '';
+    document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('.pay-fields').forEach(f => f.style.display = 'none');
+  }
+}
+
+function selectPayMethod(method) {
+  payMethod = method;
+  document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById(`pm-${method}`).classList.add('selected');
+  document.querySelectorAll('.pay-fields').forEach(f => f.style.display = 'none');
+  document.getElementById(`pf-${method}`).style.display = 'block';
+}
+
+function formatCardNum(el) {
+  el.value = el.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim().slice(0, 19);
+}
+function formatExpiry(el) {
+  let v = el.value.replace(/\D/g, '');
+  if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
+  el.value = v;
+}
+
+function processPayment() {
+  if (!payMethod) { showToast('⚠️ Please select a payment method.'); return; }
+
+  if (payMethod === 'gcash') {
+    const n = document.getElementById('gcashNum').value.trim();
+    if (n.length < 11) { showToast('❌ Enter a valid 11-digit GCash number.'); return; }
+  } else if (payMethod === 'maya') {
+    const n = document.getElementById('mayaNum').value.trim();
+    if (n.length < 11) { showToast('❌ Enter a valid 11-digit Maya number.'); return; }
+  } else if (payMethod === 'card') {
+    if (document.getElementById('cardNum').value.replace(/\s/g,'').length < 16) { showToast('❌ Enter a valid card number.'); return; }
+    if (document.getElementById('cardExp').value.length < 5)                    { showToast('❌ Enter a valid expiry date.'); return; }
+    if (document.getElementById('cardCvv').value.length < 3)                    { showToast('❌ Enter a valid CVV.'); return; }
+    if (!document.getElementById('cardName').value.trim())                       { showToast('❌ Enter name on card.'); return; }
+  }
+
+  goPayStep(3);
+  document.getElementById('payProcessing').style.display = 'block';
+  document.getElementById('paySuccessContent').style.display = 'none';
+
+  setTimeout(() => {
+    document.getElementById('payProcessing').style.display = 'none';
+    document.getElementById('paySuccessContent').style.display = 'block';
+    const methodLabel = { gcash: 'GCash', maya: 'Maya', card: 'Credit/Debit Card' }[payMethod];
+    document.getElementById('paySuccessSummary').innerHTML = `
+      <div><strong>Order ID:</strong> #${payOrder.orderId}</div>
+      <div><strong>Item:</strong> ${payOrder.item}</div>
+      <div><strong>Amount Paid:</strong> ₱${payOrder.dp.toLocaleString()} (${payOrder.isDP ? '30% DP' : 'Full Payment'})</div>
+      ${payOrder.isDP ? `<div><strong>Escrow Balance:</strong> ₱${payOrder.balance.toLocaleString()} — released on delivery</div>` : ''}
+      <div><strong>Method:</strong> ${methodLabel}</div>
+      <div style="color:var(--sage);font-weight:700">✓ Payment Confirmed & Secured</div>`;
+  }, 2500);
+}
+
+// ─── REPLACE submitOrder() WITH THIS VERSION ────────────────────────────────
+// (Delete or comment out the original submitOrder function, paste this instead)
+
+function submitOrder() {
+  if (!currentUser) {
+    showToast('⚠️ Please sign in first.');
+    setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+    return;
+  }
+
+  const name    = document.getElementById('buyerName').value.trim();
+  const contact = document.getElementById('buyerContact').value.trim();
+  const traveler = document.getElementById('selectedTraveler');
+  const item    = document.getElementById('itemName').value.trim();
+  const budget  = parseFloat(document.getElementById('itemBudget').value) || 0;
+  const qty     = parseInt(document.getElementById('itemQty').value) || 1;
+
+  if (!name)           { showToast('⚠️ Please enter your name.'); return; }
+  if (!contact)        { showToast('⚠️ Please enter your contact.'); return; }
+  if (!traveler.value) { showToast('⚠️ Please select a traveler.'); return; }
+  if (!item)           { showToast('⚠️ Please enter the item name.'); return; }
+  if (!budget)         { showToast('⚠️ Please enter your budget.'); return; }
+
+  openPaymentModal({ name, contact, traveler: traveler.value, item, budget, qty });
 }
