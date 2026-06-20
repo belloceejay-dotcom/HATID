@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -269,7 +269,7 @@
 
     <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-outline" style="font-size:0.85rem;padding:10px 20px" onclick="showToast('Opening chat with Maria...')">💬 Message Traveler</button>
-      <button class="btn btn-gold" style="font-size:0.85rem;padding:10px 20px" onclick="showToast('✅ Delivery confirmed! Final payment releasing to traveler...')">✅ Confirm Delivery</button>
+      <button class="btn btn-gold" style="font-size:0.85rem;padding:10px 20px" onclick="confirmDelivery()">✅ Confirm Delivery</button>
       <button class="btn btn-danger" style="font-size:0.85rem;padding:10px 20px" onclick="showCancelModal('buyer')">🚫 Cancel Order</button>
     </div>
   </div>
@@ -290,25 +290,6 @@
 </footer>
 <div class="footer-bottom">© 2025 HATID. All rights reserved. Built with ❤️ for Filipino travelers and buyers. | Data Privacy Officer: privacy@hatid.com</div>
 
-<!-- SUCCESS MODAL -->
-<div class="modal-overlay" id="successModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeSuccessModal()">✕</button>
-    <div class="success-icon">🎉</div>
-    <h2>Order Submitted!</h2>
-    <p>Your request has been sent to <strong id="modalTraveler"></strong>. You'll be notified by email once they accept.</p>
-    <div class="modal-summary">
-      <div><strong>Item:</strong> <span id="modalItem"></span></div>
-      <div><strong>Budget:</strong> PHP <span id="modalBudget"></span></div>
-      <div id="modalDpRow"><strong>Down Payment (30%):</strong> <span id="modalDp" style="color:var(--gold);font-weight:700"></span></div>
-      <div><strong>Order ID:</strong> <span id="modalOrderId"></span></div>
-    </div>
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-size:0.8rem;color:#166534;margin-bottom:16px">
-      📧 A confirmation email has been sent to your registered address. Your personal data is handled per <strong>RA 10173</strong>.
-    </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="closeSuccessModal()">Track My Order →</button>
-  </div>
-</div>
 
 <!-- CANCEL MODAL -->
 <div class="modal-overlay" id="cancelModal">
@@ -345,6 +326,169 @@
     </button>
   </div>
 </div>
+
+<!-- ① TRAVELER ITEMS MODAL (Maria's listed items) -->
+<div class="modal-overlay" id="travelerItemsModal">
+  <div class="modal" style="max-width:540px">
+    <button class="modal-close" onclick="closeModal('travelerItemsModal')">✕</button>
+
+    <div class="ti-modal-header">
+      <div class="ti-modal-avatar">MR</div>
+      <div>
+        <div style="font-weight:700;font-size:1rem">Maria R.</div>
+        <div style="font-size:0.78rem;color:var(--muted)">⭐ 4.9 · 143 trips · <span class="badge badge-green">✓ Verified</span></div>
+        <div style="font-size:0.82rem;font-weight:600;margin-top:4px">🇯🇵 Tokyo → Manila · Jun 15–22, 2025</div>
+      </div>
+    </div>
+
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px">
+      Items Maria can bring for you. Click any item to pre-fill your order form.
+    </p>
+
+    <div id="mariaItemsGrid"></div>
+
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:10px">
+        Don't see what you need? You can still make a custom request to Maria.
+      </p>
+      <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="customRequestMaria()">
+        ✏️ Custom Request to Maria
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ② PAYMENT MODAL (3-step: Review → Pay → Done) -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal" style="max-width:460px">
+    <button class="modal-close" onclick="closeModal('paymentModal')">✕</button>
+
+    <!-- Step progress dots -->
+    <div class="pay-step-dots">
+      <div class="pdot" id="pdot1"></div>
+      <div class="pdot" id="pdot2"></div>
+      <div class="pdot" id="pdot3"></div>
+    </div>
+
+    <!-- ── STEP 1 : Review ── -->
+    <div id="payStep1">
+      <div class="success-icon">🧾</div>
+      <h2>Review Your Order</h2>
+      <p>Confirm the details before proceeding to payment.</p>
+
+      <div class="modal-summary" id="payReviewSummary"></div>
+      <div class="pay-amount-box" id="payAmountBox"></div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-outline" style="flex:1;justify-content:center" onclick="closeModal('paymentModal')">Edit</button>
+        <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="goPayStep(2)">Proceed to Payment →</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 2 : Choose Payment Method ── -->
+    <div id="payStep2" style="display:none">
+      <div class="success-icon">💳</div>
+      <h2>Choose Payment</h2>
+      <p>Select how you'd like to pay.</p>
+
+      <div class="pay-methods">
+        <button class="pay-method-btn" id="pm-gcash" onclick="selectPayMethod('gcash')">
+          <div class="pm-icon">📱</div>
+          <div class="pm-label">GCash</div>
+        </button>
+        <button class="pay-method-btn" id="pm-maya" onclick="selectPayMethod('maya')">
+          <div class="pm-icon">💜</div>
+          <div class="pm-label">Maya</div>
+        </button>
+        <button class="pay-method-btn" id="pm-card" onclick="selectPayMethod('card')">
+          <div class="pm-icon">💳</div>
+          <div class="pm-label">Card</div>
+        </button>
+      </div>
+
+      <!-- GCash fields -->
+      <div class="pay-fields" id="pf-gcash" style="display:none">
+        <div class="form-group">
+          <label>GCash Number</label>
+          <input type="tel" id="gcashNum" placeholder="09XX XXX XXXX" maxlength="11">
+        </div>
+        <div style="background:#e0f2fe;border-radius:8px;padding:10px 14px;font-size:0.8rem;color:#075985;margin-bottom:12px">
+          📲 You'll receive an OTP on your GCash app to authorize this payment.
+        </div>
+      </div>
+
+      <!-- Maya fields -->
+      <div class="pay-fields" id="pf-maya" style="display:none">
+        <div class="form-group">
+          <label>Maya Number</label>
+          <input type="tel" id="mayaNum" placeholder="09XX XXX XXXX" maxlength="11">
+        </div>
+        <div style="background:#f3e8ff;border-radius:8px;padding:10px 14px;font-size:0.8rem;color:#6b21a8;margin-bottom:12px">
+          💜 You'll receive an OTP on your Maya app to authorize this payment.
+        </div>
+      </div>
+
+      <!-- Card fields -->
+      <div class="pay-fields" id="pf-card" style="display:none">
+        <div class="form-group">
+          <label>Card Number</label>
+          <input type="text" id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNum(this)">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Expiry</label>
+            <input type="text" id="cardExp" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+          </div>
+          <div class="form-group">
+            <label>CVV</label>
+            <input type="text" id="cardCvv" placeholder="123" maxlength="3">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Name on Card</label>
+          <input type="text" id="cardName" placeholder="JUAN DELA CRUZ">
+        </div>
+      </div>
+
+      <div class="pay-amount-box" id="payAmountBox2"></div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-outline" style="flex:1;justify-content:center" onclick="goPayStep(1)">← Back</button>
+        <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="processPayment()">Pay Now 🔒</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 3 : Processing / Success ── -->
+    <div id="payStep3" style="display:none;text-align:center">
+
+      <!-- Processing -->
+      <div id="payProcessing">
+        <div style="font-size:2.5rem;margin-bottom:12px">⏳</div>
+        <h2>Processing Payment…</h2>
+        <p>Please wait while we securely process your payment.</p>
+        <div class="pay-spinner"></div>
+      </div>
+
+      <!-- Success -->
+      <div id="paySuccessContent" style="display:none">
+        <div class="success-icon">🎉</div>
+        <h2>Payment Successful!</h2>
+        <p>Your order is submitted and payment is held in escrow.</p>
+        <div class="modal-summary" id="paySuccessSummary"></div>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;font-size:0.8rem;color:#166534;margin-bottom:16px;text-align:left">
+          📧 A confirmation email with your Order ID and receipt has been sent. Funds are protected under HATID Escrow until delivery is confirmed.
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center"
+          onclick="closeModal('paymentModal');document.getElementById('tracker').scrollIntoView({behavior:'smooth'})">
+          Track My Order →
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 <div class="toast" id="toast"></div>
 <script src="hatid-script.js"></script>
